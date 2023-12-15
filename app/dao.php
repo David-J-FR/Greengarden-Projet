@@ -8,7 +8,7 @@ class DAO
 	*/
     //paramètres de connexion à la base de donnée
 
-    private $host = "127.0.0.1";
+    private $host = "db";
     private $user = "root";
     private $password = "";
     private $database = "greengarden";
