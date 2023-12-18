@@ -6,14 +6,14 @@ $dao->connexion();
 
 
 
-if (isset($_POST['btn_supprimer'])){ 
-    $dao->DelProduct($_POST['btn_supprimer']); 
+if (isset($_POST['btn_supprimer'])) {
+    $dao->DelProduct($_POST['btn_supprimer']);
 }
 
 // Récupérer les catégories
 $list_categories = $dao->getCategorie();
 
-$category= isset($_POST['selectedCategory']) ? $_POST['selectedCategory'] : 'all';   // Récupérer la catégorie sélectionnée
+$category = isset($_POST['selectedCategory']) ? $_POST['selectedCategory'] : 'all';   // Récupérer la catégorie sélectionnée
 
 // Récupérer les produits en fonction de la catégorie sélectionnée
 if ($category == 'all') {
@@ -36,8 +36,8 @@ if ($category == 'all') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital@1&display=swap" rel="stylesheet">
     <title>Accueil</title>
     <style>
-        img{
-            
+        img {
+
             height: 200px !important;
             width: 200px !important;
         }
@@ -47,9 +47,13 @@ if ($category == 'all') {
             font-family: 'Poppins', sans-serif;
         }
 
-        footer {height : 8vh !important;}
+        footer {
+            height: 8vh !important;
+        }
 
-        main {min-height: 50vh !important;}
+        main {
+            min-height: 50vh !important;
+        }
     </style>
 </head>
 
@@ -66,11 +70,11 @@ if ($category == 'all') {
                     <li class="nav-item">
                         <a class="nav-link active text-white" aria-current="page" href="index.php">Accueil</a>
                     </li>
-                <?php if ((isset($_SESSION['login']) == true) && ($_SESSION['Id_UserType']== 2)) { ?> 
-                   <li class="nav-item">
-                        <a class="nav-link text-secondary" href="pannelAdmin.php">Pannel admin</a>
-                    </li>
-                <?php } ?>
+                    <?php if ((isset($_SESSION['login']) == true) && ($_SESSION['Id_UserType'] == 2)) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary" href="pannelAdmin.php">Pannel admin</a>
+                        </li>
+                    <?php } ?>
 
                 </ul>
 
@@ -81,7 +85,7 @@ if ($category == 'all') {
                     <span class="material-symbols-outlined me-1 ">shopping_cart</span> Panier
                     </a> -->
                     <button class="btn btn-secondary d-flex justify-content-center me-2 btn-block text-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"><span class="material-symbols-outlined me-1 ">shopping_cart</span> Panier</button>
-       
+
                     <a style="color:red;" class="d-flex justify-content-center " title="Cliquez ici pour vous déconnecter" href='deco.php'>Déconnexion</a>
 
                 <?php } ?>
@@ -92,66 +96,80 @@ if ($category == 'all') {
     <!-- Fin de la partie navbar  -->
 
 
-<div class="Titre d-flex justify-content-center mb-5 ">
-    <div class="d-flex flex-column text-center">
-    <h1 class="fw-bold"> Bienvenue sur GreenGarden ! </h1> <br>
-    <h3> Votre magasin de jardinage</h3>
+    <div class="Titre d-flex justify-content-center mb-5 ">
+        <div class="d-flex flex-column text-center">
+            <h1 class="fw-bold"> Bienvenue sur GreenGarden ! </h1> <br>
+            <h3> Votre magasin de jardinage</h3>
+        </div>
     </div>
-</div>
 
     <!-- partie card produits -->
+
+
+    <form method="POST" class="d-flex justify-content-center mb-5">
+        <div class="d-flex flex-column">
+            <label class="mb-2" for="category" class="form-label">Choisir une catégorie : </label>
+            <select name="selectedCategory" id="category" class="form-select" onchange="submit()">                                                     <!-- onchange="submit()" permet de soumettre le formulaire à chaque changement de catégorie -->                                                                   
+                <option value="all" <?php echo ($category === 'all') ? 'selected' : ''; ?>>Tous les produits</option>              <!-- Si la catégorie est 'all', on met l'attribut 'selected' -->
+
+
+                <?php foreach ($list_categories as $parentCategory) { ?>                                                           <!-- On parcourt les catégories parentes --> 
+                    <?php if ($parentCategory['Id_Categorie_Parent'] === null) { ?>                                                <!-- On n'affiche comme catégorie parente que ceux qui ont l'id catégorie NULL car c'est comme cela qu'on les sait dans la bdd -->
+                        <optgroup label="<?php echo $parentCategory['Libelle']; ?>">                                               <!-- On affiche le libellé de la catégorie parente --> 
+                            <?php foreach ($list_categories as $subCategory) { ?>                                                  <!-- On parcourt les sous catégories par catégorie parente --> 
+                                <?php if ($subCategory['Id_Categorie_Parent'] == $parentCategory['Id_Categorie']) { ?>                                                                <!-- Si l'id catégorie parente est égal à l'id catégorie parente de la sous catégorie, on affiche la sous catégorie -->
+                                    <option value="<?php echo $subCategory['Id_Categorie']; ?>" <?php echo ($category == $subCategory['Id_Categorie']) ? 'selected' : ''; ?>>         <!-- Si la catégorie est égale à la sous catégorie, on met l'attribut 'selected' -->
+                                        <?php echo $subCategory['Libelle']; ?>                                                                                                        <!-- On affiche le libellé de la sous catégorie -->
+                                    </option>
+                                <?php } ?>
+                            <?php } ?>
+                        <?php } ?>
+                    <?php } ?>
+
+            </select>
+        </div>
+    </form>
+
+
  
-<form method="POST" class="d-flex justify-content-center mb-5">
-    <div class="d-flex flex-column">
-        <label class="mb-2" for="category">Choisir une catégorie : </label>
-        <select name="selectedCategory" id="category" onchange="submit()">
-            <option value= "all" <?php echo ($category === 'all') ? 'selected' : ''; ?>>Tous les produits</option>
-            <?php foreach ($list_categories as $list_categorie) { ?>
-                <option value="<?php echo $list_categorie['Id_Categorie']; ?>" <?php echo ($category == $list_categorie['Id_Categorie']) ? 'selected' : ''; ?>>
-                    <?php echo $list_categorie['Libelle']; ?>
-                </option>
-            <?php } ?>
-        </select>
-    </div>    
-</form>
 
     <main class="container d-flex flex-content-center flex-row flex-wrap mb-5">
-   
+
         <?php foreach ($dao->getProduct() as $product) { ?>
             <div class="col-lg-4 col-md-6 col-12 mb-4 mx-auto d-flex justify-content-center">
-            <div class="card m-3 d-flex flex-wrap justify-content-center mt-2 border border-secondary-subtle" id=" <?php echo $product['Id_Produit']?>" style="width: 18rem;">
-                <h5 class="card-title d-flex justify-content-center mt-2"><?php echo $product['Nom_court']?></h5>
-                <div class="image d-flex justify-content-center">
-                <img src="<?php echo $product['Photo'] ?>" class="card-img-top" alt="...">
-                </div>
-                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                    <p class="card-text text-center ">  <?php echo $product['Nom_Long'] ?> </p>
-                    <p class="card-text d-flex justify-content-center fw-semibold"> <?php echo $product['Prix_Achat'] ?> €</p>
+                <div class="card m-3 d-flex flex-wrap justify-content-center mt-2 border border-secondary-subtle" id=" <?php echo $product['Id_Produit'] ?>" style="width: 18rem;">
+                    <h5 class="card-title d-flex justify-content-center mt-2"><?php echo $product['Nom_court'] ?></h5>
+                    <div class="image d-flex justify-content-center">
+                        <img src="<?php echo $product['Photo'] ?>" class="card-img-top" alt="...">
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <p class="card-text text-center "> <?php echo $product['Nom_Long'] ?> </p>
+                        <p class="card-text d-flex justify-content-center fw-semibold"> <?php echo $product['Prix_Achat'] ?> €</p>
 
-            <form method="POST">
-                <div class="d-grid">
-                    <button type="input" name="btn_ajoutPanier" class="btn btn-secondary btn-block" >Ajouter au panier</button>
-                    <?php if ((isset($_SESSION['login']) == true) && ($_SESSION['Id_UserType']== 2)) { ?>                              
-                       <button type="input" name="btn_supprimer" value="<?php echo $product['Id_Produit']?>" class="btn btn-dark btn-block mt-2">Supprimer</button>
-                    <?php } ?>
+                        <form method="POST">
+                            <div class="d-grid">
+                                <button type="input" name="btn_ajoutPanier" class="btn btn-secondary btn-block">Ajouter au panier</button>
+                                <?php if ((isset($_SESSION['login']) == true) && ($_SESSION['Id_UserType'] == 2)) { ?>
+                                    <button type="input" name="btn_supprimer" value="<?php echo $product['Id_Produit'] ?>" class="btn btn-dark btn-block mt-2">Supprimer</button>
+                                <?php } ?>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </form>
-                </div>
-            </div>
             </div>
         <?php } ?>
 
     </main>
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title d-flex justify-content-center me-2 btn-block text-center" id="offcanvasRightLabel"> <span class="material-symbols-outlined me-1 ">shopping_cart</span> Panier</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body">
-    ...
-  </div>
-</div>
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title d-flex justify-content-center me-2 btn-block text-center" id="offcanvasRightLabel"> <span class="material-symbols-outlined me-1 ">shopping_cart</span> Panier</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            ...
+        </div>
+    </div>
 
     <!-- fin partie card produits -->
 
@@ -160,7 +178,7 @@ if ($category == 'all') {
         <div class="container-fluid d-flex justify-content-center ">
             <span class="navbar-brand text-white fs-6 text"> GreenGarden - 2023 </span>
         </div>
-    </footer> 
+    </footer>
 
 
     <?php

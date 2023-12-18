@@ -8,7 +8,7 @@ class DAO
 	*/
     //paramètres de connexion à la base de donnée
 
-    private $host = "db";
+    private $host = "127.0.0.1";
     private $user = "root";
     private $password = "";
     private $database = "greengarden";
@@ -153,7 +153,7 @@ class DAO
         return $this->getResults($sql);                                         
     }
 
-    public function getProductsByCategory($categoryId) {
+    public function getProductsByCategory($categoryId) {                                                          //fonction pour récupérer les produits par catégorie
         $sql = "SELECT Id_produit, Nom_court, Photo, SUM(Prix_Achat * Taux_TVA / 100) AS TVA,
         SUM(Prix_Achat + (SELECT SUM(Prix_Achat * Taux_TVA / 100) FROM t_d_produit)) AS TTC
         FROM t_d_produit

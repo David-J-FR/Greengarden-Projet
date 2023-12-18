@@ -22,7 +22,6 @@ if (isset($_POST['btn_ajouter'])) {
 
     $dao->AddProduct($tauxTVA, $nomLong, $nomCourt, $refFournisseur, $photo, $prixAchat, $idFournisseur, $idCategorie);
     $message = "Produit ajouté avec succès";
-   
 }
 
 
@@ -142,7 +141,21 @@ if (isset($_POST['btn_ajouter'])) {
                     <select name="idCategorie" class="form-select" required>
                         <option value="" disabled selected>Catégorie</option>
                         <?php foreach ($dao->getCategorie() as $categorie) { ?>
+                            <?php if ($categorie['Id_Categorie_Parent'] != null) { ?>
                             <option value="<?php echo $categorie['Id_Categorie']; ?>"><?php echo $categorie['Libelle']; ?></option>
+                            <?php } ?>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <select name="idCategorieParente" class="form-select" required>
+                        <option value="" disabled selected>Catégorie Parente</option>
+
+                        <?php foreach ($dao->getCategorie() as $categorie) { ?>
+                            <?php if ($categorie['Id_Categorie_Parent'] === null) { ?>
+                                <option value="<?php echo $categorie['Id_Categorie_Parent']; ?>"><?php echo $categorie['Libelle']; ?></option>
+                            <?php } ?>
                         <?php } ?>
                     </select>
                 </div>
@@ -154,11 +167,11 @@ if (isset($_POST['btn_ajouter'])) {
                     </div>
                 </div>
                 <div class="d-flex justify-content-center mt-2" style="color:green;" id="messValidAjoutProduit">
-                                    <?php
-                                    if ($message) {
-                                        print $message;
-                                    }
-                                    ?>
+                    <?php
+                    if ($message) {
+                        print $message;
+                    }
+                    ?>
                 </div>
 
             </div>
