@@ -10,6 +10,14 @@ if (isset($_POST['btn_supprimer'])) {
     $dao->DelProduct($_POST['btn_supprimer']);
 }
 
+if (isset($_POST['btn_modifier_valider'])) {
+    $dao->ModifProduct($_POST['btn_modifier_valider']);
+}
+
+
+
+
+
 // Récupérer les catégories
 $list_categories = $dao->getCategorie();
 
@@ -109,17 +117,17 @@ if ($category == 'all') {
     <form method="POST" class="d-flex justify-content-center mb-5">
         <div class="d-flex flex-column">
             <label class="mb-2" for="category" class="form-label">Choisir une catégorie : </label>
-            <select name="selectedCategory" id="category" class="form-select" onchange="submit()">                                                     <!-- onchange="submit()" permet de soumettre le formulaire à chaque changement de catégorie -->                                                                   
-                <option value="all" <?php echo ($category === 'all') ? 'selected' : ''; ?>>Tous les produits</option>              <!-- Si la catégorie est 'all', on met l'attribut 'selected' -->
+            <select name="selectedCategory" id="category" class="form-select" onchange="submit()"> <!-- onchange="submit()" permet de soumettre le formulaire à chaque changement de catégorie -->
+                <option value="all" <?php echo ($category === 'all') ? 'selected' : ''; ?>>Tous les produits</option> <!-- Si la catégorie est 'all', on met l'attribut 'selected' -->
 
 
-                <?php foreach ($list_categories as $parentCategory) { ?>                                                           <!-- On parcourt les catégories parentes --> 
-                    <?php if ($parentCategory['Id_Categorie_Parent'] === null) { ?>                                                <!-- On n'affiche comme catégorie parente que ceux qui ont l'id catégorie NULL car c'est comme cela qu'on les sait dans la bdd -->
-                        <optgroup label="<?php echo $parentCategory['Libelle']; ?>">                                               <!-- On affiche le libellé de la catégorie parente --> 
-                            <?php foreach ($list_categories as $subCategory) { ?>                                                  <!-- On parcourt les sous catégories par catégorie parente --> 
-                                <?php if ($subCategory['Id_Categorie_Parent'] == $parentCategory['Id_Categorie']) { ?>                                                                <!-- Si l'id catégorie parente est égal à l'id catégorie parente de la sous catégorie, on affiche la sous catégorie -->
-                                    <option value="<?php echo $subCategory['Id_Categorie']; ?>" <?php echo ($category == $subCategory['Id_Categorie']) ? 'selected' : ''; ?>>         <!-- Si la catégorie est égale à la sous catégorie, on met l'attribut 'selected' -->
-                                        <?php echo $subCategory['Libelle']; ?>                                                                                                        <!-- On affiche le libellé de la sous catégorie -->
+                <?php foreach ($list_categories as $parentCategory) { ?> <!-- On parcourt les catégories parentes -->
+                    <?php if ($parentCategory['Id_Categorie_Parent'] === null) { ?> <!-- On n'affiche comme catégorie parente que ceux qui ont l'id catégorie NULL car c'est comme cela qu'on les sait dans la bdd -->
+                        <optgroup label="<?php echo $parentCategory['Libelle']; ?>"> <!-- On affiche le libellé de la catégorie parente -->
+                            <?php foreach ($list_categories as $subCategory) { ?> <!-- On parcourt les sous catégories par catégorie parente -->
+                                <?php if ($subCategory['Id_Categorie_Parent'] == $parentCategory['Id_Categorie']) { ?> <!-- Si l'id catégorie parente est égal à l'id catégorie parente de la sous catégorie, on affiche la sous catégorie -->
+                                    <option value="<?php echo $subCategory['Id_Categorie']; ?>" <?php echo ($category == $subCategory['Id_Categorie']) ? 'selected' : ''; ?>> <!-- Si la catégorie est égale à la sous catégorie, on met l'attribut 'selected' -->
+                                        <?php echo $subCategory['Libelle']; ?> <!-- On affiche le libellé de la sous catégorie -->
                                     </option>
                                 <?php } ?>
                             <?php } ?>
@@ -131,13 +139,13 @@ if ($category == 'all') {
     </form>
 
 
- 
 
-    <main class="container d-flex flex-content-center flex-row flex-wrap mb-5">
+
+    <main class="container d-flex flex-content-center flex-row flex-wrap mb-5 ">
 
         <?php foreach ($dao->getProduct() as $product) { ?>
-            <div class="col-lg-4 col-md-6 col-12 mb-4 mx-auto d-flex justify-content-center">
-                <div class="card m-3 d-flex flex-wrap justify-content-center mt-2 border border-secondary-subtle" id=" <?php echo $product['Id_Produit'] ?>" style="width: 18rem;">
+            <div class="col-lg-4 col-md-6 col-12 mb-4 mx-auto d-flex justify-content-center ">
+                <div class="card m-3 d-flex flex-wrap justify-content-center mt-2 border  shadow p-3 mb-5  rounded" id=" <?php echo $product['Id_Produit'] ?>" style="width: 18rem;">
                     <h5 class="card-title d-flex justify-content-center mt-2"><?php echo $product['Nom_court'] ?></h5>
                     <div class="image d-flex justify-content-center">
                         <img src="<?php echo $product['Photo'] ?>" class="card-img-top" alt="...">
@@ -151,6 +159,101 @@ if ($category == 'all') {
                                 <button type="input" name="btn_ajoutPanier" class="btn btn-secondary btn-block">Ajouter au panier</button>
                                 <?php if ((isset($_SESSION['login']) == true) && ($_SESSION['Id_UserType'] == 2)) { ?>
                                     <button type="input" name="btn_supprimer" value="<?php echo $product['Id_Produit'] ?>" class="btn btn-dark btn-block mt-2">Supprimer</button>
+                                    <button type="button" name="<?php echo $product['Nom_court'] ?>" value="<?php echo $product['Id_Produit'] ?>" class="btn btn-secondary btn-block mt-2 " data-bs-toggle="modal" data-bs-target="#exampleModal">Modifier</button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modification du produit:</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+
+                                                    <section class="container mt-5 ">
+                                                        <!-- A compléter car ne fonctionne pas -->
+                                                        <h4 class="text-center mb-4">Modification de <?php echo $product['Nom_court'] ?> </h4>
+
+
+                                                        <form method="POST">
+                                                            <div class="row mb-3 d-flex justify-content-center">
+
+                                                                <div class="col-12 mb-3">
+                                                                    <input type="text" name="tauxTVA-modif" class="form-control" placeholder="Taux de TVA"  />
+                                                                </div>
+
+
+                                                                <div class="col-12 mb-3">
+                                                                    <input type="text" name="nomLong-modif" class="form-control" placeholder="Nom long"  />
+                                                                </div>
+
+
+                                                                <div class="col-12 mb-3">
+                                                                    <input type="text" name="nomCourt-modif" class="form-control" placeholder="Nom court"  />
+                                                                </div>
+
+
+                                                                <div class="col-12 mb-3">
+                                                                    <input type="text" name="refFournisseur-modif" class="form-control" placeholder="Ref Fournisseur"  />
+                                                                </div>
+
+
+                                                                <div class="col-12 mb-3">
+                                                                    <input type="text" name="photo-modif" class="form-control" placeholder="photo (lien)"  />
+                                                                </div>
+
+
+                                                                <div class="col-12 mb-3">
+                                                                    <input type="text" name="prixAchat-modif" class="form-control" placeholder="Prix d'achat euros"  />
+                                                                </div>
+
+                                                                <div class="col-12 mb-3">
+                                                                    <select name="idFournisseur-modif" class="form-select" >
+                                                                        <option value="" disabled selected>Fournisseur</option>
+                                                                        <?php foreach ($dao->getFournisseur() as $fournisseur) { ?>
+                                                                            <option value="<?php echo $fournisseur['Id_Fournisseur']; ?>"><?php echo $fournisseur['Nom_Fournisseur']; ?></option>
+                                                                        <?php } ?>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-12 mb-3">
+                                                                    <select name="idCategorie-modif" class="form-select" >
+                                                                        <option value="" disabled selected>Catégorie</option>
+                                                                        <?php foreach ($dao->getCategorie() as $categorie) { ?>
+                                                                            <?php if ($categorie['Id_Categorie_Parent'] != null) { ?>
+                                                                                <option value="<?php echo $categorie['Id_Categorie']; ?>"><?php echo $categorie['Libelle']; ?></option>
+                                                                            <?php } ?>
+                                                                        <?php } ?>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-12 mb-3">
+                                                                    <select name="idCategorieParente-modif" class="form-select" >
+                                                                        <option value="" disabled selected>Catégorie Parente</option>
+
+                                                                        <?php foreach ($dao->getCategorie() as $categorie) { ?>
+                                                                            <?php if ($categorie['Id_Categorie_Parent'] === null) { ?>
+                                                                                <option value="<?php echo $categorie['Id_Categorie_Parent']; ?>"><?php echo $categorie['Libelle']; ?></option>
+                                                                            <?php } ?>
+                                                                        <?php } ?>
+                                                                    </select>
+                                                                </div>
+
+
+                                                            </div>
+                                                        </form>
+
+
+
+
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="input" name="btn_modifier_valider"  class="btn btn-secondary" data-bs-dismiss="modal">Valider</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 <?php } ?>
                             </div>
                         </form>

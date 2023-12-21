@@ -87,7 +87,16 @@ class DAO
 
     }
 
+   // Fonction pour modifier un produit dans la base de données
+public function modifProduct($tauxTVAModif, $nomLongModif, $nomCourtModif, $refFournisseurModif, $photoModif, $prixAchatModif, $idFournisseurModif, $idCategorieModif, $idProduit){
+    $sql = "UPDATE t_d_produit 
+            SET Taux_TVA = ?, Nom_Long = ?, Nom_court = ?, Ref_Fournisseur = ?, Photo = ?, Prix_Achat = ?, Id_Fournisseur = ?, Id_Categorie = ?
+            WHERE Id_Produit = ?";
+    $stmt = $this->bdd->prepare($sql);
+    $stmt->execute([$tauxTVAModif, $nomLongModif, $nomCourtModif, $refFournisseurModif, $photoModif, $prixAchatModif, $idFournisseurModif, $idCategorieModif, $idProduit]); 
+}
 
+    
 
 
 

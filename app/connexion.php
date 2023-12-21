@@ -82,6 +82,7 @@ if (isset($_POST['register'])) {
             background-color: #F5F5F5;
             font-family: 'Poppins', sans-serif;
         }
+        
     </style>
 </head>
 
@@ -115,7 +116,7 @@ if (isset($_POST['register'])) {
         </div>
     </nav>
     <!-- Fin de la partie navbar  -->
-
+<main >
     <div class="mask d-flex align-items-center h-100 gradient-custom-3">
 
         <div class="container">
@@ -186,8 +187,8 @@ if (isset($_POST['register'])) {
             </div>
         </div>
     </div>
-    </section>
-
+    
+</main>
 
     <!-- Footer -->
     <footer class="navbar navbar-expand-lg bg-dark text-white mt-5 ">

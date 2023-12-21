@@ -25,6 +25,21 @@ if (isset($_POST['btn_ajouter'])) {
 }
 
 
+if (isset($_POST['btn_modifier_valider'])) {
+    $tauxTVAModif = $dao->valideDonnees($_POST['tauxTVA-modif']);
+    $nomLongModif = $dao->valideDonnees($_POST['nomLong-modif']);
+    $nomCourtModif = $dao->valideDonnees($_POST['nomCourt-modif']);
+    $refFournisseurModif = $dao->valideDonnees($_POST['refFournisseur-modif']);
+    $photoModif = $dao->valideDonnees($_POST['photo-modif']);
+    $prixAchatModif = $dao->valideDonnees($_POST['prixAchat-modif']);
+    $idFournisseurModif = $dao->valideDonnees($_POST['idFournisseur-modif']);
+    $idCategorieModif = $dao->valideDonnees($_POST['idCategorie-modif']);
+
+    $dao->modifProduct($tauxTVAModif, $nomLongModif, $nomCourtModif, $refFournisseurModif, $photoModif, $prixAchatModif, $idFournisseurModif, $idCategorieModif);
+    $message = "Produit modifié avec succès";
+}
+
+
 
 
 
@@ -166,7 +181,7 @@ if (isset($_POST['btn_ajouter'])) {
                         <button class="btn btn-dark " name="btn_ajouter" type="submit">Ajouter</button>
                     </div>
                 </div>
-                <div class="d-flex justify-content-center mt-2" style="color:green;" id="messValidAjoutProduit">
+                <div class="d-flex justify-content-center mt-2 mb-5" style="color:green;" id="messValidAjoutProduit">
                     <?php
                     if ($message) {
                         print $message;
@@ -176,7 +191,7 @@ if (isset($_POST['btn_ajouter'])) {
 
             </div>
         </form>
-    </section>
+    </section >
 
 
 
