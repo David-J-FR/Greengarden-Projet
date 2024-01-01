@@ -10,10 +10,6 @@ if (isset($_POST['btn_supprimer'])) {
     $dao->DelProduct($_POST['btn_supprimer']);
 }
 
-if (isset($_POST['btn_modifier_valider'])) {
-    $dao->ModifProduct($_POST['btn_modifier_valider']);
-}
-
 
 
 
@@ -143,7 +139,14 @@ if ($category == 'all') {
 
     <main class="container d-flex flex-content-center flex-row flex-wrap mb-5 ">
 
-        <?php foreach ($dao->getProduct() as $product) { ?>
+        <?php foreach ($dao->getProduct() as $product) {
+            
+            if(isset($_POST['modif_'.$product['Id_Produit']])){
+//SET Taux_TVA = :tva, Nom_Long = noml, Nom_court = :nomc, Ref_Fournisseur =:ref, Photo = :img, Prix_Achat = :prix, Id_Fournisseur = :Ifour, Id_Categorie = :iCat WHERE Id_Produit = :Iprod
+                $dao->ModifProduct(["tva"=>$_POST['tauxTVA-modif'],"noml"=>$_POST['nomLong-modif'],"nomc"=>$_POST['nomCourt-modif'],"ref"=>$_POST['refFournisseur-modif'],"img"=>$_POST['photo-modif'],"prix"=>$_POST['prixAchat-modif'],"Ifour"=>$_POST['idFournisseur-modif'],"iCat"=>$_POST['idCategorie-modif'],"Iprod"=>$product['Id_Produit']]);
+            }
+
+            ?>
             <div class="col-lg-4 col-md-6 col-12 mb-4 mx-auto d-flex justify-content-center ">
                 <div class="card m-3 d-flex flex-wrap justify-content-center mt-2 border  shadow p-3 mb-5  rounded" id=" <?php echo $product['Id_Produit'] ?>" style="width: 18rem;">
                     <h5 class="card-title d-flex justify-content-center mt-2"><?php echo $product['Nom_court'] ?></h5>
@@ -159,10 +162,10 @@ if ($category == 'all') {
                                 <button type="input" name="btn_ajoutPanier" class="btn btn-secondary btn-block">Ajouter au panier</button>
                                 <?php if ((isset($_SESSION['login']) == true) && ($_SESSION['Id_UserType'] == 2)) { ?>
                                     <button type="input" name="btn_supprimer" value="<?php echo $product['Id_Produit'] ?>" class="btn btn-dark btn-block mt-2">Supprimer</button>
-                                    <button type="button" name="<?php echo $product['Nom_court'] ?>" value="<?php echo $product['Id_Produit'] ?>" class="btn btn-secondary btn-block mt-2 " data-bs-toggle="modal" data-bs-target="#exampleModal">Modifier</button>
+                                    <button type="button" name="<?php echo $product['Nom_court'] ?>" value="<?php echo $product['Id_Produit'] ?>" class="btn btn-secondary btn-block mt-2 " data-bs-toggle="modal" data-bs-target="#exampleModal_<?= $product['Id_Produit']; ?>">Modifier</button>
 
                                     <!-- Modal -->
-                                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal fade" id="exampleModal_<?= $product['Id_Produit']; ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -180,37 +183,37 @@ if ($category == 'all') {
                                                             <div class="row mb-3 d-flex justify-content-center">
 
                                                                 <div class="col-12 mb-3">
-                                                                    <input type="text" name="tauxTVA-modif" class="form-control" placeholder="Taux de TVA"  />
+                                                                    <input type="text" name="tauxTVA-modif" class="form-control" placeholder="Taux de TVA" value="<?php echo $product['Taux_TVA'] ?>" />
                                                                 </div>
 
 
                                                                 <div class="col-12 mb-3">
-                                                                    <input type="text" name="nomLong-modif" class="form-control" placeholder="Nom long"  />
+                                                                    <input type="text" name="nomLong-modif" class="form-control" placeholder="Nom long"  value="<?php echo $product['Nom_Long'] ?>"/>
                                                                 </div>
 
 
                                                                 <div class="col-12 mb-3">
-                                                                    <input type="text" name="nomCourt-modif" class="form-control" placeholder="Nom court"  />
+                                                                    <input type="text" name="nomCourt-modif" class="form-control" placeholder="Nom court" value="<?php echo $product['Nom_court'] ?>" />
                                                                 </div>
 
 
                                                                 <div class="col-12 mb-3">
-                                                                    <input type="text" name="refFournisseur-modif" class="form-control" placeholder="Ref Fournisseur"  />
+                                                                    <input type="text" name="refFournisseur-modif" class="form-control" placeholder="Ref Fournisseur" value="<?php echo $product['Ref_fournisseur'] ?>" />
                                                                 </div>
 
 
                                                                 <div class="col-12 mb-3">
-                                                                    <input type="text" name="photo-modif" class="form-control" placeholder="photo (lien)"  />
+                                                                    <input type="text" name="photo-modif" class="form-control" placeholder="photo (lien)"  value="<?php echo $product['Photo'] ?>"/>
                                                                 </div>
 
 
                                                                 <div class="col-12 mb-3">
-                                                                    <input type="text" name="prixAchat-modif" class="form-control" placeholder="Prix d'achat euros"  />
+                                                                    <input type="text" name="prixAchat-modif" class="form-control" placeholder="Prix d'achat euros" value="<?php echo $product['Prix_Achat'] ?>" />
                                                                 </div>
 
                                                                 <div class="col-12 mb-3">
                                                                     <select name="idFournisseur-modif" class="form-select" >
-                                                                        <option value="" disabled selected>Fournisseur</option>
+                                                                    <option value="<?php echo $product['Id_Fournisseur'] ?>" selected>Fournisseur</option>
                                                                         <?php foreach ($dao->getFournisseur() as $fournisseur) { ?>
                                                                             <option value="<?php echo $fournisseur['Id_Fournisseur']; ?>"><?php echo $fournisseur['Nom_Fournisseur']; ?></option>
                                                                         <?php } ?>
@@ -219,28 +222,15 @@ if ($category == 'all') {
 
                                                                 <div class="col-12 mb-3">
                                                                     <select name="idCategorie-modif" class="form-select" >
-                                                                        <option value="" disabled selected>Catégorie</option>
+                                                                    <option value="<?php echo $product['Id_Categorie'] ?>" selected> Catégorie produit</option>
                                                                         <?php foreach ($dao->getCategorie() as $categorie) { ?>
+                                                                           
                                                                             <?php if ($categorie['Id_Categorie_Parent'] != null) { ?>
                                                                                 <option value="<?php echo $categorie['Id_Categorie']; ?>"><?php echo $categorie['Libelle']; ?></option>
                                                                             <?php } ?>
                                                                         <?php } ?>
                                                                     </select>
                                                                 </div>
-
-                                                                <div class="col-12 mb-3">
-                                                                    <select name="idCategorieParente-modif" class="form-select" >
-                                                                        <option value="" disabled selected>Catégorie Parente</option>
-
-                                                                        <?php foreach ($dao->getCategorie() as $categorie) { ?>
-                                                                            <?php if ($categorie['Id_Categorie_Parent'] === null) { ?>
-                                                                                <option value="<?php echo $categorie['Id_Categorie_Parent']; ?>"><?php echo $categorie['Libelle']; ?></option>
-                                                                            <?php } ?>
-                                                                        <?php } ?>
-                                                                    </select>
-                                                                </div>
-
-
                                                             </div>
                                                         </form>
 
@@ -249,7 +239,7 @@ if ($category == 'all') {
 
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="input" name="btn_modifier_valider"  class="btn btn-secondary" data-bs-dismiss="modal">Valider</button>
+                                                    <button type="input" name="modif_<?= $product['Id_Produit']; ?>"  class="btn btn-secondary" data-bs-dismiss="modal">Valider</button>
                                                 </div>
                                             </div>
                                         </div>
